@@ -1,0 +1,313 @@
+use std::fmt::{Write};
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DistroIdV0 {
+  Alpine,
+  Centos,
+  Debian,
+  Fedora,
+  RedHat,
+  Ubuntu,
+}
+
+impl DistroIdV0 {
+  pub fn to_desc_str(&self) -> &'static str {
+    match self {
+      &DistroIdV0::Alpine => "alpine",
+      &DistroIdV0::Centos => "centos",
+      &DistroIdV0::Debian => "debian",
+      &DistroIdV0::Fedora => "fedora",
+      &DistroIdV0::RedHat => "redhat",
+      &DistroIdV0::Ubuntu => "ubuntu",
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum DistroCodenameV0 {
+  Alpine3_8,
+  Alpine3_9,
+  Centos6,
+  Centos7,
+  DebianWheezy,
+  DebianJessie,
+  DebianStretch,
+  DebianBuster,
+  UbuntuTrusty,
+  UbuntuXenial,
+  UbuntuBionic,
+}
+
+impl DistroCodenameV0 {
+  pub fn to_id(&self) -> DistroIdV0 {
+    match self {
+      &DistroCodenameV0::Alpine3_8 |
+      &DistroCodenameV0::Alpine3_9 => DistroIdV0::Alpine,
+      &DistroCodenameV0::Centos6 |
+      &DistroCodenameV0::Centos7 => DistroIdV0::Centos,
+      &DistroCodenameV0::DebianWheezy |
+      &DistroCodenameV0::DebianJessie |
+      &DistroCodenameV0::DebianStretch |
+      &DistroCodenameV0::DebianBuster => DistroIdV0::Debian,
+      &DistroCodenameV0::UbuntuTrusty |
+      &DistroCodenameV0::UbuntuXenial |
+      &DistroCodenameV0::UbuntuBionic => DistroIdV0::Ubuntu,
+    }
+  }
+
+  pub fn to_desc_str(&self) -> &'static str {
+    match self {
+      &DistroCodenameV0::Alpine3_8 => "alpine3_8",
+      &DistroCodenameV0::Alpine3_9 => "alpine3_9",
+      &DistroCodenameV0::Centos6 => "centos_6",
+      &DistroCodenameV0::Centos7 => "centos_7",
+      &DistroCodenameV0::DebianWheezy => "debian_wheezy",
+      &DistroCodenameV0::DebianJessie => "debian_jessie",
+      &DistroCodenameV0::DebianStretch => "debian_stretch",
+      &DistroCodenameV0::DebianBuster => "debian_buster",
+      &DistroCodenameV0::UbuntuTrusty => "ubuntu_trusty",
+      &DistroCodenameV0::UbuntuXenial => "ubuntu_xenial",
+      &DistroCodenameV0::UbuntuBionic => "ubuntu_bionic",
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+pub struct DistroInfoV0 {
+  pub id: DistroIdV0,
+  pub codename: Option<DistroCodenameV0>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+pub struct DriverVersionV0 {
+  pub major: u32,
+  pub minor: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+pub enum CudaToolkitVersionV0 {
+  Cuda6_5,
+  Cuda7_0,
+  Cuda7_5,
+  Cuda8_0,
+  Cuda9_0,
+  Cuda9_1,
+  Cuda9_2,
+  Cuda10_0,
+}
+
+impl CudaToolkitVersionV0 {
+  pub fn to_desc_str(&self) -> &'static str {
+    match self {
+      &CudaToolkitVersionV0::Cuda6_5 => "v6_5",
+      &CudaToolkitVersionV0::Cuda7_0 => "v7_0",
+      &CudaToolkitVersionV0::Cuda7_5 => "v7_5",
+      &CudaToolkitVersionV0::Cuda8_0 => "v8_0",
+      &CudaToolkitVersionV0::Cuda9_0 => "v9_0",
+      &CudaToolkitVersionV0::Cuda9_1 => "v9_1",
+      &CudaToolkitVersionV0::Cuda9_2 => "v9_2",
+      &CudaToolkitVersionV0::Cuda10_0 => "v10_0",
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, Default)]
+pub struct PciSlotV0 {
+  pub domain: Option<u32>,
+  pub bus: u8,
+  pub device: u8,
+  pub function: u8,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
+pub struct PciRecordV0 {
+  pub slot: PciSlotV0,
+  pub is_vga: bool,
+  pub is_nvidia: bool,
+  pub class: u16,
+  pub vendor: u16,
+  pub device: u16,
+  //pub svendor: String,
+  //pub sdevice: String,
+  pub svendor: u16,
+  pub sdevice: u16,
+  pub rev: Option<u8>,
+}
+
+impl PciRecordV0 {
+  pub fn is_gpu(&self) -> bool {
+    self.is_vga && self.is_nvidia
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GpusV0 {
+  pub pci_records: Vec<PciRecordV0>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SystemSetupV0 {
+  pub distro_info: DistroInfoV0,
+  pub driver_version: DriverVersionV0,
+  pub num_cpus: usize,
+  pub gpus: GpusV0,
+}
+
+impl SystemSetupV0 {
+  pub fn prettyprinted(&self) -> String {
+    let mut buf = String::new();
+    writeln!(&mut buf, "distro: {}", self.distro_info.id.to_desc_str()).unwrap();
+    if let Some(ref codename) = self.distro_info.codename {
+      writeln!(&mut buf, "  codename: {}", codename.to_desc_str()).unwrap();
+    }
+    writeln!(&mut buf, "nvidia driver: {}.{}",
+        self.driver_version.major, self.driver_version.minor).unwrap();
+    writeln!(&mut buf, "num cpus: {}", self.num_cpus).unwrap();
+    if !self.gpus.pci_records.is_empty() {
+      writeln!(&mut buf, "gpus:").unwrap();
+      for (idx, pci_record) in self.gpus.pci_records.iter().enumerate() {
+        writeln!(&mut buf, "  gpu {}:", idx).unwrap();
+        write!(&mut buf, "    pci slot: ").unwrap();
+        if let Some(ref domain) = pci_record.slot.domain {
+          write!(&mut buf, "{:08x}:", domain).unwrap();
+        }
+        writeln!(&mut buf, "{:02x}:{:02x}.{:02x}",
+            pci_record.slot.bus,
+            pci_record.slot.device,
+            pci_record.slot.function,
+        ).unwrap();
+        write!(&mut buf, "    flags:").unwrap();
+        if pci_record.is_vga {
+          write!(&mut buf, " vga").unwrap();
+        }
+        if pci_record.is_nvidia {
+          write!(&mut buf, " nvidia").unwrap();
+        }
+        writeln!(&mut buf, "").unwrap();
+        writeln!(&mut buf, "    class: {:04x}",
+            pci_record.class).unwrap();
+        write!(&mut buf, "    vendor: {:04x} device: {:04x}",
+            pci_record.vendor, pci_record.device).unwrap();
+        if let Some(ref rev) = pci_record.rev {
+          write!(&mut buf, " rev: {:02x}", rev).unwrap();
+        }
+        writeln!(&mut buf, "").unwrap();
+        writeln!(&mut buf, "    sub vendor: {:04x} device: {:04x}",
+            pci_record.svendor, pci_record.sdevice).unwrap();
+      }
+    }
+    buf
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HelloV0 {
+  pub api_key: Vec<u8>,
+  pub root_manifest_key: Vec<u8>,
+  pub system_setup: SystemSetupV0,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HeyV0 {
+  pub session_token: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ContainerLogStdoutV0 {
+  pub stdout: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ContainerLogStderrV0 {
+  pub stderr: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ContainerRetV0 {
+  pub exit_code: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MotdV0 {
+  pub message: Vec<u8>,
+  pub abort: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HelloAckV0 {
+  pub session_token: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GitRepoV0 {
+  pub repo_url: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GitBranchV0 {
+  pub branch_name: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GitCommitV0 {
+  pub commit_hash: Vec<u8>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GithubPRV0 {
+  pub pr_number: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GitCommitWorkItemV0 {
+  pub repo: GitRepoV0,
+  pub branch: GitBranchV0,
+  pub commit: Option<GitCommitV0>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GithubPRWorkItemV0 {
+  pub repo: GitRepoV0,
+  pub pr: GithubPRV0,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+#[repr(u8)]
+pub enum WorkItemV0 {
+  GitCommit(GitCommitWorkItemV0),
+  GithubPR(GithubPRWorkItemV0),
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[repr(u8)]
+pub enum ClientMsgV0 {
+  Hello(HelloV0),
+  Hello2,
+  Hey(HeyV0),
+  Goodbye,
+  ContainerEnter,
+  ContainerLogStdout(ContainerLogStdoutV0),
+  ContainerLogStderr(ContainerLogStderrV0),
+  ContainerRet(ContainerRetV0),
+}
+
+impl ClientMsgV0 {
+  pub fn wire_protocol_version(&self) -> u8 { 0 }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[repr(u8)]
+pub enum ServerMsgV0 {
+  Motd(MotdV0),
+  HelloAck(HelloAckV0),
+  Ack,
+  AreYouStillThere,
+  HeresAWorkItem(WorkItemV0),
+}
+
+impl ServerMsgV0 {
+  pub fn wire_protocol_version(&self) -> u8 { 0 }
+}
