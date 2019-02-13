@@ -59,8 +59,8 @@ impl DistroCodenameV0 {
 
   pub fn to_desc_str(&self) -> &'static str {
     match self {
-      &DistroCodenameV0::Alpine3_8 => "alpine3_8",
-      &DistroCodenameV0::Alpine3_9 => "alpine3_9",
+      &DistroCodenameV0::Alpine3_8 => "alpine_3_8",
+      &DistroCodenameV0::Alpine3_9 => "alpine_3_9",
       &DistroCodenameV0::Centos6 => "centos_6",
       &DistroCodenameV0::Centos7 => "centos_7",
       &DistroCodenameV0::DebianWheezy => "debian_wheezy",
