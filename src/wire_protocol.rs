@@ -203,6 +203,21 @@ impl SystemSetupV0 {
   }
 }
 
+#[derive(Debug)]
+pub enum LocalDeviceV0 {
+  PciSlot(String),
+}
+
+#[derive(Debug)]
+pub struct LocalMachineV0 {
+  pub gpus: Vec<LocalDeviceV0>,
+}
+
+#[derive(Debug)]
+pub struct MachineConfigV0 {
+  pub local_machine: LocalMachineV0,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum UserDomainV0 {
   GuppybotOrg,
