@@ -203,17 +203,17 @@ impl SystemSetupV0 {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum LocalDeviceV0 {
   PciSlot(String),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct LocalMachineV0 {
   pub gpus: Vec<LocalDeviceV0>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MachineConfigV0 {
   pub local_machine: LocalMachineV0,
 }
