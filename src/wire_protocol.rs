@@ -203,6 +203,39 @@ impl SystemSetupV0 {
   }
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum UserDomainV0 {
+  GuppybotOrg,
+  GithubCom,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct UserHandleV0 {
+  pub username: String,
+  pub domain: UserDomainV0,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum CiEventPolicyV0 {
+  Nobody,
+  AllowedUsers,
+  EverybodyExceptCiChanges,
+  Everybody,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CiRepoV0 {
+  pub remote_url: String,
+  pub commit_policy: CiEventPolicyV0,
+  pub pr_policy: CiEventPolicyV0,
+  pub allowed_users: Vec<UserHandleV0>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CiConfigV0 {
+  pub repos: Vec<CiRepoV0>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct HelloV0 {
   pub api_key: Vec<u8>,
