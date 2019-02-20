@@ -2,9 +2,11 @@ extern crate bincode;
 extern crate serde;
 #[macro_use] extern crate serde_derive;
 
+pub use crate::v1 as wire_protocol;
+
 use serde::{Deserialize};
 
-pub mod wire_protocol;
+pub mod v1;
 
 pub trait Revise<'a> {
   type RevisionPrev: Revise<'a> + Deserialize<'a>;
