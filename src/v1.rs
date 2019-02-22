@@ -1,3 +1,5 @@
+use crate::{Revise, NoPrev};
+
 use std::fmt::{Write};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
@@ -252,111 +254,45 @@ pub struct CiConfigV0 {
   pub repos: Vec<CiRepoV0>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct HelloV0 {
-  pub api_key: Vec<u8>,
-  pub root_manifest_key: Vec<u8>,
-  pub system_setup: SystemSetupV0,
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum Bot2RegistryV0 {
+  RegisterCiMachine,
+  RegisterCiRepo{
+    repo_url: String,
+  },
+  RegisterMachine{
+    api_id: String,
+    root_manifest_id: String,
+    system_setup: SystemSetupV0,
+    machine_cfg: MachineConfigV0,
+  },
+  UnregisterCiMachine,
+  UnregisterCiRepo,
+  UnregisterMachine,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct HeyV0 {
-  pub session_token: Vec<u8>,
+impl<'a> Revise<'a> for Bot2RegistryV0 {
+  type RevisionPrev = NoPrev;
+
+  fn revision() -> u32 {
+    0
+  }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ContainerLogStdoutV0 {
-  pub stdout: Vec<u8>,
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum Registry2BotV0 {
+  RegisterCiMachine(Option<()>),
+  RegisterCiRepo(Option<()>),
+  RegisterMachine(Option<()>),
+  UnregisterCiMachine(Option<()>),
+  UnregisterCiRepo(Option<()>),
+  UnregisterMachine(Option<()>),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ContainerLogStderrV0 {
-  pub stderr: Vec<u8>,
-}
+impl<'a> Revise<'a> for Registry2BotV0 {
+  type RevisionPrev = NoPrev;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ContainerRetV0 {
-  pub exit_code: i32,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct MotdV0 {
-  pub message: Vec<u8>,
-  pub abort: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct HelloAckV0 {
-  pub session_token: Vec<u8>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GitRepoV0 {
-  pub repo_url: Vec<u8>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GitBranchV0 {
-  pub branch_name: Vec<u8>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GitCommitV0 {
-  pub commit_hash: Vec<u8>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GithubPRV0 {
-  pub pr_number: u32,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GitCommitWorkItemV0 {
-  pub repo: GitRepoV0,
-  pub branch: GitBranchV0,
-  pub commit: Option<GitCommitV0>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct GithubPRWorkItemV0 {
-  pub repo: GitRepoV0,
-  pub pr: GithubPRV0,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[repr(u8)]
-pub enum WorkItemV0 {
-  GitCommit(GitCommitWorkItemV0),
-  GithubPR(GithubPRWorkItemV0),
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[repr(u8)]
-pub enum ClientMsgV0 {
-  Hello(HelloV0),
-  Hello2,
-  Hey(HeyV0),
-  Goodbye,
-  ContainerEnter,
-  ContainerLogStdout(ContainerLogStdoutV0),
-  ContainerLogStderr(ContainerLogStderrV0),
-  ContainerRet(ContainerRetV0),
-}
-
-impl ClientMsgV0 {
-  pub fn wire_protocol_version(&self) -> u8 { 0 }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-#[repr(u8)]
-pub enum ServerMsgV0 {
-  Motd(MotdV0),
-  HelloAck(HelloAckV0),
-  Ack,
-  AreYouStillThere,
-  HeresAWorkItem(WorkItemV0),
-}
-
-impl ServerMsgV0 {
-  pub fn wire_protocol_version(&self) -> u8 { 0 }
+  fn revision() -> u32 {
+    0
+  }
 }
