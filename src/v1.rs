@@ -256,6 +256,12 @@ pub struct CiConfigV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Bot2RegistryV0 {
+  Auth{
+    api_id: String,
+  },
+  Deauth{
+    api_id: String,
+  },
   RegisterCiMachine,
   RegisterCiRepo{
     repo_url: String,
@@ -281,6 +287,8 @@ impl<'a> Revise<'a> for Bot2RegistryV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Registry2BotV0 {
+  Auth(Option<()>),
+  Deauth(Option<()>),
   RegisterCiMachine(Option<()>),
   RegisterCiRepo(Option<()>),
   RegisterMachine(Option<()>),
