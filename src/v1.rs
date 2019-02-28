@@ -262,14 +262,22 @@ pub enum Bot2RegistryV0 {
   Deauth{
     api_id: String,
   },
-  RegisterCiMachine,
+  RegisterCiGroupMachine{
+    api_id: String,
+    group_id: String,
+    machine_id: String,
+  },
+  RegisterCiMachine{
+    api_id: String,
+    machine_id: String,
+  },
   RegisterCiRepo{
     api_id: String,
     repo_url: String,
   },
   RegisterMachine{
     api_id: String,
-    root_manifest_id: String,
+    machine_id: String,
     system_setup: SystemSetupV0,
     machine_cfg: MachineConfigV0,
   },
@@ -290,6 +298,7 @@ impl<'a> Revise<'a> for Bot2RegistryV0 {
 pub enum Registry2BotV0 {
   Auth(Option<()>),
   Deauth(Option<()>),
+  RegisterCiGroupMachine(Option<()>),
   RegisterCiMachine(Option<()>),
   RegisterCiRepo(Option<RegisterCiRepoV0>),
   RegisterMachine(Option<()>),
