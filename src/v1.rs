@@ -300,7 +300,9 @@ pub enum Registry2BotV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RegisterCiRepoV0 {
+  pub repo_web_url: String,
   pub webhook_payload_url: String,
+  pub webhook_settings_url: Option<String>,
   pub webhook_secret: String,
 }
 
