@@ -270,9 +270,11 @@ pub enum Bot2RegistryV0 {
   RegisterCiMachine{
     api_id: String,
     machine_id: String,
+    repo_url: String,
   },
   RegisterCiRepo{
     api_id: String,
+    group_id: Option<String>,
     repo_url: String,
   },
   RegisterMachine{
