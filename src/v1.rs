@@ -264,6 +264,7 @@ pub enum Bot2RegistryV0 {
   },
   RegisterCiMachine,
   RegisterCiRepo{
+    api_id: String,
     repo_url: String,
   },
   RegisterMachine{
@@ -290,11 +291,17 @@ pub enum Registry2BotV0 {
   Auth(Option<()>),
   Deauth(Option<()>),
   RegisterCiMachine(Option<()>),
-  RegisterCiRepo(Option<()>),
+  RegisterCiRepo(Option<RegisterCiRepoV0>),
   RegisterMachine(Option<()>),
   UnregisterCiMachine(Option<()>),
   UnregisterCiRepo(Option<()>),
   UnregisterMachine(Option<()>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct RegisterCiRepoV0 {
+  pub webhook_payload_url: String,
+  pub webhook_secret: String,
 }
 
 impl<'a> Revise<'a> for Registry2BotV0 {
