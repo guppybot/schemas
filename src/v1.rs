@@ -127,21 +127,25 @@ pub struct PciSlotV0 {
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct PciRecordV0 {
   pub slot: PciSlotV0,
-  pub is_vga: bool,
-  pub is_nvidia: bool,
   pub class: u16,
   pub vendor: u16,
   pub device: u16,
-  //pub svendor: String,
-  //pub sdevice: String,
-  pub svendor: u16,
-  pub sdevice: u16,
+  pub svendor: Option<u16>,
+  pub sdevice: Option<u16>,
   pub rev: Option<u8>,
 }
 
 impl PciRecordV0 {
+  pub fn is_vga(&self) -> bool {
+    self.class == 0x0300
+  }
+
+  pub fn is_nvidia(&self) -> bool {
+    self.vendor == 0x10de
+  }
+
   pub fn is_gpu(&self) -> bool {
-    self.is_vga && self.is_nvidia
+    self.is_vga() && self.is_nvidia()
   }
 }
 
@@ -182,10 +186,10 @@ impl SystemSetupV0 {
             pci_record.slot.function,
         ).unwrap();
         write!(&mut buf, "    flags:").unwrap();
-        if pci_record.is_vga {
+        if pci_record.is_vga() {
           write!(&mut buf, " vga").unwrap();
         }
-        if pci_record.is_nvidia {
+        if pci_record.is_nvidia() {
           write!(&mut buf, " nvidia").unwrap();
         }
         writeln!(&mut buf, "").unwrap();
@@ -193,12 +197,20 @@ impl SystemSetupV0 {
             pci_record.class).unwrap();
         write!(&mut buf, "    vendor: {:04x} device: {:04x}",
             pci_record.vendor, pci_record.device).unwrap();
-        if let Some(ref rev) = pci_record.rev {
+        if let Some(rev) = pci_record.rev {
           write!(&mut buf, " rev: {:02x}", rev).unwrap();
         }
         writeln!(&mut buf, "").unwrap();
-        writeln!(&mut buf, "    sub vendor: {:04x} device: {:04x}",
-            pci_record.svendor, pci_record.sdevice).unwrap();
+        if pci_record.svendor.is_some() || pci_record.sdevice.is_some() {
+          write!(&mut buf, "   ").unwrap();
+          if let Some(svendor) = pci_record.svendor {
+            write!(&mut buf, " sub vendor: {:04x}", svendor).unwrap();
+          }
+          if let Some(sdevice) = pci_record.sdevice {
+            write!(&mut buf, " sub device: {:04x}", sdevice).unwrap();
+          }
+          writeln!(&mut buf, "").unwrap();
+        }
       }
     }
     buf
