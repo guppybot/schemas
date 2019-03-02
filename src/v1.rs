@@ -366,6 +366,7 @@ pub struct _StartCiTaskV0 {
   pub api_key: Vec<u8>,
   pub ci_run_key: Vec<u8>,
   pub ci_task_key: Vec<u8>,
+  pub task_nr: i64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
