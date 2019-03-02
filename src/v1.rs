@@ -268,10 +268,27 @@ pub struct CiConfigV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Bot2RegistryV0 {
-  Auth{
-    api_id: String,
+  _NewCiRun(Option<_NewCiRunV0>),
+  _StartCiTask{
+    api_key: Vec<u8>,
+    ci_run_key: Vec<u8>,
+    task_nr: i64,
+    task_name: Option<String>,
+    taskspec: Option<Vec<u8>>,
   },
-  Deauth{
+  _AppendCiTaskData{
+    api_key: Vec<u8>,
+    ci_run_key: Vec<u8>,
+    ci_task_key: Vec<u8>,
+    key: String,
+    data: Vec<u8>,
+  },
+  _DoneCiTask{
+    api_key: Vec<u8>,
+    ci_run_key: Vec<u8>,
+    ci_task_key: Vec<u8>,
+  },
+  Auth{
     api_id: String,
   },
   RegisterCiGroupMachine{
@@ -295,9 +312,19 @@ pub enum Bot2RegistryV0 {
     system_setup: SystemSetupV0,
     machine_cfg: MachineConfigV0,
   },
+  Unauth{
+    api_id: String,
+  },
   UnregisterCiMachine,
   UnregisterCiRepo,
   UnregisterMachine,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct _NewCiRunV0 {
+  pub api_key: Vec<u8>,
+  pub ci_run_key: Vec<u8>,
+  pub task_count: Option<u64>,
 }
 
 impl<'a> Revise<'a> for Bot2RegistryV0 {
@@ -310,15 +337,35 @@ impl<'a> Revise<'a> for Bot2RegistryV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Registry2BotV0 {
+  _NewCiRun{
+    // TODO
+    api_key: Vec<u8>,
+    ci_run_key: Vec<u8>,
+    repo_clone_url: String,
+    originator: Option<(String, UserDomainV0)>,
+    ref_full: Option<String>,
+    commit_hash: Option<String>,
+    runspec: Option<Vec<u8>>,
+  },
+  _StartCiTask(Option<_StartCiTaskV0>),
+  _AppendCiTaskData(Option<()>),
+  _DoneCiTask(Option<()>),
   Auth(Option<()>),
-  Deauth(Option<()>),
   RegisterCiGroupMachine(Option<()>),
   RegisterCiMachine(Option<()>),
   RegisterCiRepo(Option<RegisterCiRepoV0>),
   RegisterMachine(Option<()>),
+  Unauth(Option<()>),
   UnregisterCiMachine(Option<()>),
   UnregisterCiRepo(Option<()>),
   UnregisterMachine(Option<()>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct _StartCiTaskV0 {
+  pub api_key: Vec<u8>,
+  pub ci_run_key: Vec<u8>,
+  pub ci_task_key: Vec<u8>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
