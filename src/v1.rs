@@ -275,11 +275,13 @@ pub enum Bot2RegistryV0 {
     task_nr: i64,
     task_name: Option<String>,
     taskspec: Option<Vec<u8>>,
+    ts: Option<String>,
   },
   _AppendCiTaskData{
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
     ci_task_key: Vec<u8>,
+    ts: Option<String>,
     key: String,
     data: Vec<u8>,
   },
@@ -287,6 +289,7 @@ pub enum Bot2RegistryV0 {
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
     ci_task_key: Vec<u8>,
+    ts: Option<String>,
   },
   Auth{
     api_id: String,
@@ -325,6 +328,7 @@ pub struct _NewCiRunV0 {
   pub api_key: Vec<u8>,
   pub ci_run_key: Vec<u8>,
   pub task_count: Option<u64>,
+  pub ts: Option<String>,
 }
 
 impl<'a> Revise<'a> for Bot2RegistryV0 {
