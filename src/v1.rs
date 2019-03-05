@@ -3,6 +3,31 @@ use crate::{Revise, NoPrev};
 use std::fmt::{Write};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+pub enum CpuArchV0 {
+  I386,
+  I686,
+  Ppc64Le,
+  X86_64,
+}
+
+impl CpuArchV0 {
+  pub fn to_desc_str(&self) -> &'static str {
+    match self {
+      &CpuArchV0::I386 => "i386",
+      &CpuArchV0::I686 => "i686",
+      &CpuArchV0::Ppc64Le => "ppc64le",
+      &CpuArchV0::X86_64 => "x86_64",
+    }
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
+pub struct CpuInfoV0 {
+  pub arch: CpuArchV0,
+  pub num_cpus: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum DistroIdV0 {
   Alpine,
@@ -156,22 +181,24 @@ pub struct GpusV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SystemSetupV0 {
+  pub cpu_info: CpuInfoV0,
   pub distro_info: DistroInfoV0,
   pub driver_version: DriverVersionV0,
-  pub num_cpus: usize,
   pub gpus: GpusV0,
 }
 
 impl SystemSetupV0 {
   pub fn prettyprinted(&self) -> String {
     let mut buf = String::new();
+    writeln!(&mut buf, "cpu:").unwrap();
+    writeln!(&mut buf, "  arch: {}", self.cpu_info.arch.to_desc_str()).unwrap();
+    writeln!(&mut buf, "  num cpus: {}", self.cpu_info.num_cpus).unwrap();
     writeln!(&mut buf, "distro: {}", self.distro_info.id.to_desc_str()).unwrap();
     if let Some(ref codename) = self.distro_info.codename {
       writeln!(&mut buf, "  codename: {}", codename.to_desc_str()).unwrap();
     }
     writeln!(&mut buf, "nvidia driver: {}.{}",
         self.driver_version.major, self.driver_version.minor).unwrap();
-    writeln!(&mut buf, "num cpus: {}", self.num_cpus).unwrap();
     if !self.gpus.pci_records.is_empty() {
       writeln!(&mut buf, "gpus:").unwrap();
       for (idx, pci_record) in self.gpus.pci_records.iter().enumerate() {
