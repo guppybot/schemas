@@ -369,11 +369,10 @@ impl<'a> Revise<'a> for Bot2RegistryV0 {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Registry2BotV0 {
   _NewCiRun{
-    // TODO
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
     repo_clone_url: String,
-    originator: Option<(String, UserDomainV0)>,
+    originator: Option<(String, Option<String>)>,
     ref_full: Option<String>,
     commit_hash: Option<String>,
     runspec: Option<Vec<u8>>,
