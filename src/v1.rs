@@ -115,7 +115,7 @@ pub struct DriverVersionV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
-pub enum CudaToolkitVersionV0 {
+pub enum CudaVersionV0 {
   Cuda6_5,
   Cuda7_0,
   Cuda7_5,
@@ -126,19 +126,26 @@ pub enum CudaToolkitVersionV0 {
   Cuda10_0,
 }
 
-impl CudaToolkitVersionV0 {
+impl CudaVersionV0 {
   pub fn to_desc_str(&self) -> &'static str {
     match self {
-      &CudaToolkitVersionV0::Cuda6_5 => "v6_5",
-      &CudaToolkitVersionV0::Cuda7_0 => "v7_0",
-      &CudaToolkitVersionV0::Cuda7_5 => "v7_5",
-      &CudaToolkitVersionV0::Cuda8_0 => "v8_0",
-      &CudaToolkitVersionV0::Cuda9_0 => "v9_0",
-      &CudaToolkitVersionV0::Cuda9_1 => "v9_1",
-      &CudaToolkitVersionV0::Cuda9_2 => "v9_2",
-      &CudaToolkitVersionV0::Cuda10_0 => "v10_0",
+      &CudaVersionV0::Cuda6_5 => "v6_5",
+      &CudaVersionV0::Cuda7_0 => "v7_0",
+      &CudaVersionV0::Cuda7_5 => "v7_5",
+      &CudaVersionV0::Cuda8_0 => "v8_0",
+      &CudaVersionV0::Cuda9_0 => "v9_0",
+      &CudaVersionV0::Cuda9_1 => "v9_1",
+      &CudaVersionV0::Cuda9_2 => "v9_2",
+      &CudaVersionV0::Cuda10_0 => "v10_0",
     }
   }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Copy)]
+pub struct GpuInfoV0 {
+  pub driver_version: Option<DriverVersionV0>,
+  pub driver_cuda_version: Option<CudaVersionV0>,
+  pub toolkit_cuda_version: Option<CudaVersionV0>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, Default)]
@@ -183,7 +190,7 @@ pub struct GpusV0 {
 pub struct SystemSetupV0 {
   pub cpu_info: CpuInfoV0,
   pub distro_info: DistroInfoV0,
-  pub driver_version: DriverVersionV0,
+  pub gpu_info: GpuInfoV0,
   pub gpus: GpusV0,
 }
 
@@ -197,8 +204,24 @@ impl SystemSetupV0 {
     if let Some(ref codename) = self.distro_info.codename {
       writeln!(&mut buf, "  codename: {}", codename.to_desc_str()).unwrap();
     }
-    writeln!(&mut buf, "nvidia driver: {}.{}",
-        self.driver_version.major, self.driver_version.minor).unwrap();
+    if self.gpu_info.driver_version.is_some() ||
+       self.gpu_info.driver_cuda_version.is_some() ||
+       self.gpu_info.toolkit_cuda_version.is_some()
+    {
+      writeln!(&mut buf, "gpu info:").unwrap();
+      if let Some(ref driver_version) = self.gpu_info.driver_version {
+        writeln!(&mut buf, "  nvidia driver: {}.{}",
+            driver_version.major, driver_version.minor).unwrap();
+      }
+      if let Some(ref v) = self.gpu_info.driver_cuda_version {
+        writeln!(&mut buf, "  cuda (driver): {}",
+            v.to_desc_str()).unwrap();
+      }
+      if let Some(ref v) = self.gpu_info.toolkit_cuda_version {
+        writeln!(&mut buf, "  cuda (toolkit): {}",
+            v.to_desc_str()).unwrap();
+      }
+    }
     if !self.gpus.pci_records.is_empty() {
       writeln!(&mut buf, "gpus:").unwrap();
       for (idx, pci_record) in self.gpus.pci_records.iter().enumerate() {
