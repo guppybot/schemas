@@ -127,6 +127,20 @@ pub enum CudaVersionV0 {
 }
 
 impl CudaVersionV0 {
+  pub fn from_major_minor(major: u32, minor: u32) -> Option<CudaVersionV0> {
+    match (major, minor) {
+      (6, 5) => Some(CudaVersionV0::Cuda6_5),
+      (7, 0) => Some(CudaVersionV0::Cuda7_0),
+      (7, 5) => Some(CudaVersionV0::Cuda7_5),
+      (8, 0) => Some(CudaVersionV0::Cuda8_0),
+      (9, 0) => Some(CudaVersionV0::Cuda9_0),
+      (9, 1) => Some(CudaVersionV0::Cuda9_1),
+      (9, 2) => Some(CudaVersionV0::Cuda9_2),
+      (10, 0) => Some(CudaVersionV0::Cuda10_0),
+      _ => None,
+    }
+  }
+
   pub fn to_desc_str(&self) -> &'static str {
     match self {
       &CudaVersionV0::Cuda6_5 => "v6_5",
