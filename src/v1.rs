@@ -302,6 +302,7 @@ pub enum Bot2RegistryV0 {
   _NewCiRun(Option<_NewCiRunV0>),
   _StartCiTask{
     api_key: Vec<u8>,
+    machine_key: Vec<u8>,
     ci_run_key: Vec<u8>,
     task_nr: i64,
     task_name: Option<String>,
