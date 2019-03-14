@@ -304,7 +304,7 @@ pub enum Bot2RegistryV0 {
     api_key: Vec<u8>,
     machine_key: Vec<u8>,
     ci_run_key: Vec<u8>,
-    task_nr: i64,
+    task_nr: u64,
     task_name: Option<String>,
     taskspec: Option<Vec<u8>>,
     ts: Option<String>,
@@ -312,7 +312,8 @@ pub enum Bot2RegistryV0 {
   _AppendCiTaskData{
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
-    task_nr: i64,
+    task_nr: u64,
+    part_nr: u64,
     ts: Option<String>,
     key: String,
     data: Vec<u8>,
@@ -320,7 +321,7 @@ pub enum Bot2RegistryV0 {
   _DoneCiTask{
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
-    task_nr: i64,
+    task_nr: u64,
     failed: bool,
     ts: Option<String>,
   },
@@ -403,7 +404,7 @@ pub struct _StartCiTaskV0 {
   pub api_key: Vec<u8>,
   pub ci_run_key: Vec<u8>,
   pub ci_task_key: Vec<u8>,
-  pub task_nr: i64,
+  pub task_nr: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
