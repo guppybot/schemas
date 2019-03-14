@@ -312,7 +312,7 @@ pub enum Bot2RegistryV0 {
   _AppendCiTaskData{
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
-    ci_task_key: Vec<u8>,
+    task_nr: i64,
     ts: Option<String>,
     key: String,
     data: Vec<u8>,
@@ -320,7 +320,7 @@ pub enum Bot2RegistryV0 {
   _DoneCiTask{
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
-    ci_task_key: Vec<u8>,
+    task_nr: i64,
     failed: bool,
     ts: Option<String>,
   },
