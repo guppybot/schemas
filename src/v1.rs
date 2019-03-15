@@ -296,7 +296,7 @@ pub enum LocalDeviceV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct LocalMachineV0 {
-  pub parallel_tasks: u32,
+  pub task_workers: u32,
   pub gpus: Vec<LocalDeviceV0>,
 }
 
