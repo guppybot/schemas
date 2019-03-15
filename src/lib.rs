@@ -8,7 +8,7 @@ pub use crate::v1 as wire_protocol;
 use byteorder::{ReadBytesExt, WriteBytesExt, LittleEndian};
 use serde::{Deserialize, Serialize};
 
-use std::io::{Cursor};
+use std::io::{Write, Cursor};
 
 pub mod v1;
 
@@ -67,12 +67,18 @@ where T: Revise<'a> + Deserialize<'a> {
 
 pub fn serialize_revision<'a, T>(value: &'a T) -> bincode::Result<Vec<u8>>
 where T: Revise<'a> + Serialize {
-  let mut buf = Vec::with_capacity(4);
-  match buf.write_u32::<LittleEndian>(T::revision()) {
+  let mut buf = Vec::with_capacity(64);
+  serialize_revision_into(&mut buf, value)
+    .map(move |_| buf)
+}
+
+pub fn serialize_revision_into<'a, W, T>(mut writer: W, value: &'a T) -> bincode::Result<()>
+where W: Write, T: Revise<'a> + Serialize {
+  match writer.write_u32::<LittleEndian>(T::revision()) {
     Err(_) => return Err(Box::new(
         bincode::ErrorKind::Custom("Failed to write revision number".to_string())
     )),
     Ok(_) => {}
   }
-  bincode::serialize_into(&mut buf, value).map(move |_| buf)
+  bincode::serialize_into(writer, value)
 }
