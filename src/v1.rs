@@ -1,4 +1,4 @@
-use crate::{Revise, NoPrev};
+use crate::{Revise, NoPrevious};
 
 use std::fmt::{Write};
 
@@ -208,6 +208,14 @@ pub struct SystemSetupV0 {
   pub gpus: GpusV0,
 }
 
+impl<'a> Revise<'a> for SystemSetupV0 {
+  type Previous = NoPrevious;
+
+  fn revision() -> u32 {
+    0
+  }
+}
+
 impl SystemSetupV0 {
   pub fn prettyprinted(&self) -> String {
     let mut buf = String::new();
@@ -297,6 +305,14 @@ pub struct MachineConfigV0 {
   pub local_machine: LocalMachineV0,
 }
 
+impl<'a> Revise<'a> for MachineConfigV0 {
+  type Previous = NoPrevious;
+
+  fn revision() -> u32 {
+    0
+  }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Bot2RegistryV0 {
   _NewCiRun(Option<_NewCiRunV0>),
@@ -367,7 +383,7 @@ pub struct _NewCiRunV0 {
 }
 
 impl<'a> Revise<'a> for Bot2RegistryV0 {
-  type RevisionPrev = NoPrev;
+  type Previous = NoPrevious;
 
   fn revision() -> u32 {
     0
@@ -416,7 +432,7 @@ pub struct RegisterCiRepoV0 {
 }
 
 impl<'a> Revise<'a> for Registry2BotV0 {
-  type RevisionPrev = NoPrev;
+  type Previous = NoPrevious;
 
   fn revision() -> u32 {
     0
