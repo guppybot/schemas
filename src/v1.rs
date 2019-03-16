@@ -315,6 +315,10 @@ impl<'a> Revise<'a> for MachineConfigV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Bot2RegistryV0 {
+  _Ping{
+    api_key: Vec<u8>,
+    machine_key: Vec<u8>,
+  },
   _NewCiRun(Option<_NewCiRunV0>),
   _StartCiTask{
     api_key: Vec<u8>,
@@ -392,6 +396,7 @@ impl<'a> Revise<'a> for Bot2RegistryV0 {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum Registry2BotV0 {
+  _Pong,
   _NewCiRun{
     api_key: Vec<u8>,
     ci_run_key: Vec<u8>,
