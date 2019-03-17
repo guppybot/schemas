@@ -114,44 +114,14 @@ pub struct DriverVersionV0 {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq)]
-#[repr(u8)]
-pub enum CudaVersionV0 {
-  Cuda6_5,
-  Cuda7_0,
-  Cuda7_5,
-  Cuda8_0,
-  Cuda9_0,
-  Cuda9_1,
-  Cuda9_2,
-  Cuda10_0,
+pub struct CudaVersionV0 {
+  pub major: u32,
+  pub minor: u32,
 }
 
 impl CudaVersionV0 {
-  pub fn from_major_minor(major: u32, minor: u32) -> Option<CudaVersionV0> {
-    match (major, minor) {
-      (6, 5) => Some(CudaVersionV0::Cuda6_5),
-      (7, 0) => Some(CudaVersionV0::Cuda7_0),
-      (7, 5) => Some(CudaVersionV0::Cuda7_5),
-      (8, 0) => Some(CudaVersionV0::Cuda8_0),
-      (9, 0) => Some(CudaVersionV0::Cuda9_0),
-      (9, 1) => Some(CudaVersionV0::Cuda9_1),
-      (9, 2) => Some(CudaVersionV0::Cuda9_2),
-      (10, 0) => Some(CudaVersionV0::Cuda10_0),
-      _ => None,
-    }
-  }
-
-  pub fn to_desc_str(&self) -> &'static str {
-    match self {
-      &CudaVersionV0::Cuda6_5 => "v6_5",
-      &CudaVersionV0::Cuda7_0 => "v7_0",
-      &CudaVersionV0::Cuda7_5 => "v7_5",
-      &CudaVersionV0::Cuda8_0 => "v8_0",
-      &CudaVersionV0::Cuda9_0 => "v9_0",
-      &CudaVersionV0::Cuda9_1 => "v9_1",
-      &CudaVersionV0::Cuda9_2 => "v9_2",
-      &CudaVersionV0::Cuda10_0 => "v10_0",
-    }
+  pub fn to_desc_str(&self) -> String {
+    format!("v{}_{}", self.major, self.minor)
   }
 }
 
