@@ -156,12 +156,16 @@ impl PciRecordV0 {
     self.class == 0x0300
   }
 
+  pub fn is_3d(&self) -> bool {
+    self.class == 0x0302
+  }
+
   pub fn is_nvidia(&self) -> bool {
     self.vendor == 0x10de
   }
 
   pub fn is_gpu(&self) -> bool {
-    self.is_vga() && self.is_nvidia()
+    (self.is_vga() || self.is_3d()) && self.is_nvidia()
   }
 }
 
