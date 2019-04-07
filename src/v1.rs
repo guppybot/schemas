@@ -348,12 +348,21 @@ pub enum Bot2RegistryV0 {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct _NewCiRunV0 {
-  pub api_key: Vec<u8>,
-  pub ci_run_key: Vec<u8>,
-  pub task_count: Option<u64>,
-  pub failed_early: bool,
-  pub ts: Option<String>,
+pub enum _NewCiRunV0 {
+  Accept{
+    api_key: Vec<u8>,
+    ci_run_key: Vec<u8>,
+    task_count: Option<u64>,
+    failed_early: bool,
+    ts: Option<String>,
+  },
+  Redirect{
+    api_key: Vec<u8>,
+    machine_key: Vec<u8>,
+  },
+  Reject{
+    api_key: Vec<u8>,
+  },
 }
 
 impl<'a> Revise<'a> for Bot2RegistryV0 {
